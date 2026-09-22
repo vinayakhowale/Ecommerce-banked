@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: social-commerce-backend
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  jackson:
+    default-property-inclusion: non_null
+  mail:
+    # Any SMTP provider works here (Gmail, SendGrid, Mailgun, AWS SES SMTP, your company's
+    # mail server, etc.) -- swap providers purely via environment variables, no code change.
+    # If these are left at placeholder defaults, sending will fail gracefully (caught and
+    # logged by EmailService) and the reset link is still printed to the server log, so the
+    # whole flow stays testable locally before any real mail server is configured.
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        transport:
+          protocol: smtp
+
+server:
+  # Railway (and most PaaS) inject the port to listen on via the PORT env var. Falls back to
+  # 8080 for local development, so nothing changes when running on your own machine.
+  port: ${PORT:8080}
+  error:
+    include-message: always
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-this-super-secret-key-before-deploying-to-prod-min-32-chars}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  admin:
+    default-email: ${ADMIN_EMAIL:admin@socialcommerce.com}
+    default-password: ${ADMIN_PASSWORD:Admin@12345}
+  upload:
+    dir: ${UPLOAD_DIR:./uploads}
+    public-base-path: /uploads
+  redirect:
+    blocked-hosts: localhost,127.0.0.1,0.0.0.0,169.254.169.254
+  catalog:
+    # How many days a product counts as a "New Launch" after being added. Tunable without a
+    # code change or rebuild -- just override NEW_LAUNCH_WINDOW_DAYS in the environment.
+    new-launch-window-days: ${NEW_LAUNCH_WINDOW_DAYS:21}
+  razorpay:
+    # Your platform's MAIN Razorpay account credentials (Test mode keys while developing).
+    # Get these from Razorpay Dashboard -> Settings -> API Keys. Never commit real keys --
+    # set these as real environment variables in any shared/deployed environment.
+    key-id: ${RAZORPAY_KEY_ID:rzp_test_TdZewSZPiGV3nV}
+    key-secret: ${RAZORPAY_KEY_SECRET:eeLhY9vCLSW7JXyiRLVWOxBh}
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:4200}
+  password-reset:
+    token-expiry-minutes: ${PASSWORD_RESET_EXPIRY_MINUTES:30}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
