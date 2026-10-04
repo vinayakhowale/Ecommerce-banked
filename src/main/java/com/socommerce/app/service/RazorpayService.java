@@ -15,16 +15,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * Thin wrapper around the Razorpay Java SDK. Keeps all direct SDK/JSON handling in one place so
- * the rest of the app only ever deals with plain Java types.
- *
- * Test vs Live mode is entirely environment-driven (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) --
- * see application.yml. Swapping to live credentials in production requires only setting those
- * two environment variables; no code or rebuild is needed. Razorpay's own convention is that a
- * key ID always starts with "rzp_test_" or "rzp_live_", which this class uses purely to log
- * which mode is active at startup, as a safety check against deploying with the wrong keys.
- */
+
 @Slf4j
 @Service
 public class RazorpayService {
