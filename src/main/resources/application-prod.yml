@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/socommerce}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    root: INFO
+    com.socommerce.app: INFO
+
+# Razorpay: no override needed here -- app.razorpay.key-id / key-secret (defined in the base
+# application.yml) already read from RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET environment variables
+# in every profile. To go live, set those two env vars to your real "rzp_live_..." credentials
+# wherever this app actually runs in production -- no code change, no rebuild, no redeploy of a
+# new jar required. Confirm the switch worked by checking the startup log line from
+# RazorpayService, which prints "LIVE" or "TEST" mode explicitly.
