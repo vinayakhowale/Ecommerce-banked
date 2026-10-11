@@ -1,44 +1,25 @@
-server:
-  port: ${PORT:8080}
-  forward-headers-strategy: framework
-  tomcat:
-    max-swallow-size: -1
-    connection-timeout: 300s
-  error:
-    include-message: always
-
 spring:
-  application:
-    name: social-commerce-backend
-
   datasource:
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ecommerce}
-    username: ${PGUSER:postgres}
-    password: ${PGPASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-
+    # File-based H2 (not in-memory): your data now survives backend restarts.
+    # The database file lives at ./data/socommerce.mv.db relative to wherever you run the app from.
+    # Delete that file any time you want a clean slate.
+    url: jdbc:h2:file:./data/socommerce;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
     show-sql: false
-
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 200MB
-      max-request-size: 200MB
-      file-size-threshold: 2MB
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
 logging:
   level:
-    root: INFO
-    org.springframework.web: INFO
-
-app:
-  upload:
-    dir: ${UPLOAD_DIR:uploads}
-  # Add your own settings here, with the same names your code uses, e.g.:
-  # jwt:
-  #   secret: ${JWT_SECRET:change-me}
-  #   expiration: 86400000
+    com.socommerce.app: DEBUG
