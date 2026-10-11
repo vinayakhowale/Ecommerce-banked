@@ -1,32 +1,44 @@
-# ===== Server =====
-# Railway sets PORT; locally it falls back to 8080
-server.port=${PORT:8080}
-server.forward-headers-strategy=framework
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+  tomcat:
+    max-swallow-size: -1
+    connection-timeout: 300s
+  error:
+    include-message: always
 
-# ===== File uploads (images + videos) =====
-spring.servlet.multipart.enabled=true
-spring.servlet.multipart.max-file-size=200MB
-spring.servlet.multipart.max-request-size=200MB
-spring.servlet.multipart.file-size-threshold=2MB
-server.tomcat.max-swallow-size=-1
-server.tomcat.connection-timeout=300s
+spring:
+  application:
+    name: social-commerce-backend
 
-# Folder where uploads are saved (Railway volume is mounted at /app/uploads)
-app.upload.dir=${UPLOAD_DIR:uploads}
+  datasource:
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ecommerce}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
 
-# ===== Database (PostgreSQL on Railway) =====
-spring.datasource.url=jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ecommerce}
-spring.datasource.username=${PGUSER:postgres}
-spring.datasource.password=${PGPASSWORD:postgres}
-spring.datasource.driver-class-name=org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
 
-# ===== JPA / Hibernate =====
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.open-in-view=false
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.format_sql=false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
+      file-size-threshold: 2MB
 
-# ===== Logging (shows the real cause of 500 errors in Railway logs) =====
-logging.level.root=INFO
-logging.level.org.springframework.web=INFO
-server.error.include-message=always
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+
+app:
+  upload:
+    dir: ${UPLOAD_DIR:uploads}
+  # Add your own settings here, with the same names your code uses, e.g.:
+  # jwt:
+  #   secret: ${JWT_SECRET:change-me}
+  #   expiration: 86400000
