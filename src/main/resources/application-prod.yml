@@ -1,28 +1,32 @@
-spring:
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/socommerce}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+# ===== Server =====
+# Railway sets PORT; locally it falls back to 8080
+server.port=${PORT:8080}
+server.forward-headers-strategy=framework
 
-logging:
-  level:
-    root: INFO
-    com.socommerce.app: INFO
+# ===== File uploads (images + videos) =====
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=200MB
+spring.servlet.multipart.max-request-size=200MB
+spring.servlet.multipart.file-size-threshold=2MB
+server.tomcat.max-swallow-size=-1
+server.tomcat.connection-timeout=300s
 
-# Razorpay: no override needed here -- app.razorpay.key-id / key-secret (defined in the base
-# application.yml) already read from RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET environment variables
-# in every profile. To go live, set those two env vars to your real "rzp_live_..." credentials
-# wherever this app actually runs in production -- no code change, no rebuild, no redeploy of a
-# new jar required. Confirm the switch worked by checking the startup log line from
-# RazorpayService, which prints "LIVE" or "TEST" mode explicitly.
+# Folder where uploads are saved (Railway volume is mounted at /app/uploads)
+app.upload.dir=${UPLOAD_DIR:uploads}
+
+# ===== Database (PostgreSQL on Railway) =====
+spring.datasource.url=jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ecommerce}
+spring.datasource.username=${PGUSER:postgres}
+spring.datasource.password=${PGPASSWORD:postgres}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# ===== JPA / Hibernate =====
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.open-in-view=false
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# ===== Logging (shows the real cause of 500 errors in Railway logs) =====
+logging.level.root=INFO
+logging.level.org.springframework.web=INFO
+server.error.include-message=always
