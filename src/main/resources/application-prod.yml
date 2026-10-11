@@ -8,21 +8,24 @@ server:
     include-message: always
 
 spring:
-  application:
-    name: social-commerce-backend
-
   datasource:
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:ecommerce}
-    username: ${PGUSER:postgres}
-    password: ${PGPASSWORD:postgres}
+    # Uses DB_URL if set; otherwise builds the URL from Railway's Postgres variables
+    url: ${DB_URL:jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:socommerce}}
+    username: ${DB_USERNAME:${PGUSER:postgres}}
+    password: ${DB_PASSWORD:${PGPASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
-
+    hikari:
+      maximum-pool-size: 10
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
     show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  # Allow large image/video uploads
   servlet:
     multipart:
       enabled: true
@@ -30,15 +33,23 @@ spring:
       max-request-size: 200MB
       file-size-threshold: 2MB
 
+app:
+  jwt:
+    # Set JWT_SECRET in Railway Variables (long random string)
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:86400000}
+  upload:
+    # Railway volume is mounted at /app/uploads
+    dir: ${UPLOAD_DIR:/app/uploads}
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:}
+    key-secret: ${RAZORPAY_KEY_SECRET:}
+
 logging:
   level:
     root: INFO
-    org.springframework.web: INFO
+    com.socommerce.app: INFO
 
-app:
-  upload:
-    dir: ${UPLOAD_DIR:uploads}
-  # Add your own settings here, with the same names your code uses, e.g.:
-  # jwt:
-  #   secret: ${JWT_SECRET:change-me}
-  #   expiration: 86400000
+# Razorpay: app.razorpay.key-id / key-secret read from RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET.
+# To go live, set those two variables to your "rzp_live_..." credentials in Railway.
+# The RazorpayService startup log prints "LIVE" or "TEST" so you can confirm the mode.
