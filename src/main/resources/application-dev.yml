@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    # File-based H2 (not in-memory): your data now survives backend restarts.
+    # The database file lives at ./data/socommerce.mv.db relative to wherever you run the app from.
+    # Delete that file any time you want a clean slate.
+    url: jdbc:h2:file:./data/socommerce;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+
+logging:
+  level:
+    com.socommerce.app: DEBUG
